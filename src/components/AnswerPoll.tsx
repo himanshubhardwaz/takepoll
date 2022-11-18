@@ -1,4 +1,5 @@
 import { useRouter } from "next/router";
+import Image from "next/image";
 
 function NoId() {
   const router = useRouter();
@@ -8,10 +9,13 @@ function NoId() {
   };
 
   return (
-    <div
-      className='hero min-h-screen'
-      style={{ backgroundImage: `url("https://placeimg.com/1000/800/arch")` }}
-    >
+    <div className='hero min-h-screen'>
+      <Image
+        src='https://placeimg.com/1000/800/any/grayscale'
+        fill
+        alt={""}
+        className=''
+      />
       <div className='hero-overlay bg-opacity-60'></div>
       <div className='hero-content text-center text-neutral-content'>
         <div className='max-w-md'>
@@ -26,6 +30,7 @@ function NoId() {
           </button>
         </div>
       </div>
+      {/*</div>*/}
     </div>
   );
 }
