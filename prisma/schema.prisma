@@ -9,3 +9,27 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Option {
+  id String @id @default(cuid())
+
+  name      String
+  isCorrect Boolean @default(false)
+  votes     Int     @default(0)
+
+  poll      Poll     @relation(fields: [pollId], references: [id])
+  pollId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Poll {
+  id String @id @default(cuid())
+
+  question String
+  options  Option[]
+  deadline DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

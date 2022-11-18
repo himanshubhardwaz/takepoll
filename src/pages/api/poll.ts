@@ -1,0 +1,39 @@
+import type { NextApiRequest, NextApiResponse } from "next";
+import { prisma } from "@/utils/prisma";
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method === "GET") {
+    const id = req.query;
+
+    const poll = await prisma.poll.findFirst({ where: { id } });
+
+    if (poll) res.status(200).json(poll);
+    else res.status(404).json({ message: "Poll not found" });
+
+    return;
+  } else if (req.method === "POST") {
+    const { question, options, deadline } = req.body;
+
+    const poll = await prisma.poll.create({
+      data: { question, deadline: new Date(deadline) },
+    });
+
+    const createdOptions = await prisma.option.createMany({
+      data: options.map((option: { name: string }) => ({
+        ...option,
+        pollId: poll.id,
+      })),
+    });
+
+    if (poll && createdOptions) {
+      res
+        .status(200)
+        .json({ message: "Successfully created poll", id: poll.id });
+    } else res.status(500).json({ message: "Oops! Something went wrong" });
+  }
+  res.setHeader("Allow", ["GET", "POST"]);
+  res.status(405).end(`Method ${req.method} Not Allowed`);
+}

@@ -1,3 +1,12 @@
+import AnswerPoll from "@/components/AnswerPoll";
+import { useRouter } from "next/router";
+
 export default function Home() {
-  return <p className='text-red-500'>NEW NEXT.JS STARTER TEMPLATE</p>;
+  const router = useRouter();
+  const { id } = router.query;
+  return (
+    <>
+      <AnswerPoll id={id} />
+    </>
+  );
 }
