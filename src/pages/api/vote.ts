@@ -27,6 +27,7 @@ export default async function handler(
     });
 
     res.status(200).json(options);
+    return;
   }
   res.setHeader("Allow", ["POST"]);
   res.status(405).end(`Method ${req.method} Not Allowed`);
