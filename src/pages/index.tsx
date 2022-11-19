@@ -8,10 +8,7 @@ export default function Home() {
   const router = useRouter();
   const id = router.query.id;
 
-  const { data, isLoading, isError, error } = useQuery<
-    PollData,
-    { message: string }
-  >(
+  const { data, isLoading, isError } = useQuery<PollData, { message: string }>(
     ["poll-data", id],
     async () => {
       const response = await fetch(`/api/poll?id=${id}`);
@@ -25,12 +22,12 @@ export default function Home() {
     },
     {
       refetchOnWindowFocus: false,
-      enabled: !!id,
+      enabled: id ? true : false,
       retry: false,
     }
   );
 
-  if (isLoading) {
+  if (isLoading && id) {
     return (
       <div className='flex min-h-screen justify-center items-center'>
         <progress className='progress w-56'></progress>
@@ -44,26 +41,3 @@ export default function Home() {
     </>
   );
 }
-
-//export const getServerSideProps: GetServerSideProps = async (context) => {
-//  console.log("running get server side props .... ");
-//  const { res } = context;
-//  res.setHeader(
-//    "Cache-Control",
-//    "public, s-maxage=30, stale-while-revalidate=59"
-//  );
-//  const url = getUrl();
-//  const id = context.query.id;
-//  if (id) {
-//    const response = await fetch(`${url}/api/poll?id=${context.query.id}`);
-//    const data = (await response.json()) as PollData;
-
-//    if (!data?.id) {
-//      return { notFound: true };
-//    }
-
-//    return { props: { data } };
-//  } else {
-//    return { props: {} };
-//  }
-//};
