@@ -1,6 +1,5 @@
 import { useRouter } from "next/router";
 import Image from "next/image";
-import { useQuery } from "@tanstack/react-query";
 import { PollData } from "@/types/poll";
 
 function NoId() {
@@ -32,13 +31,12 @@ function NoId() {
           </button>
         </div>
       </div>
-      {/*</div>*/}
     </div>
   );
 }
 
 const AnswerPoll = ({ data }: { data?: PollData }) => {
-  if (!data) return <NoId />;
+  if (!data?.id) return <NoId />;
 
   return <>We found data: {JSON.stringify(data)}</>;
 };

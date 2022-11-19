@@ -19,7 +19,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     "public, s-maxage=30, stale-while-revalidate=59"
   );
   const url = getUrl();
-  const response = await fetch(`${url}/api/poll?id=${context.query.id}`);
-  const data = (await response.json()) as PollData;
-  return { props: { data } };
+  const id = context.query.id;
+  if (id) {
+    const response = await fetch(`${url}/api/poll?id=${context.query.id}`);
+    const data = (await response.json()) as PollData;
+
+    if (!data?.id) {
+      return { notFound: true };
+    }
+
+    return { props: { data } };
+  } else {
+    return { props: {} };
+  }
 };
