@@ -41,6 +41,7 @@ export default async function handler(
         .status(200)
         .json({ message: "Successfully created poll", id: poll.id });
     } else res.status(500).json({ message: "Oops! Something went wrong" });
+    return;
   }
   res.setHeader("Allow", ["GET", "POST"]);
   res.status(405).end(`Method ${req.method} Not Allowed`);
