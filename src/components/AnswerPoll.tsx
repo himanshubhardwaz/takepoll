@@ -1,5 +1,7 @@
 import { useRouter } from "next/router";
 import Image from "next/image";
+import { useQuery } from "@tanstack/react-query";
+import { PollData } from "@/types/poll";
 
 function NoId() {
   const router = useRouter();
@@ -35,10 +37,10 @@ function NoId() {
   );
 }
 
-const AnswerPoll = ({ id }: { id: string | string[] | undefined }) => {
-  if (!id) return <NoId />;
+const AnswerPoll = ({ data }: { data?: PollData }) => {
+  if (!data) return <NoId />;
 
-  return <>We found id {id}</>;
+  return <>We found data: {JSON.stringify(data)}</>;
 };
 
 export default AnswerPoll;

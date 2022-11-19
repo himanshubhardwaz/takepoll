@@ -6,9 +6,13 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method === "GET") {
+    console.log("getting hitted...");
     const id = req.query;
 
-    const poll = await prisma.poll.findFirst({ where: { id } });
+    const poll = await prisma.poll.findFirst({
+      where: id,
+      include: { options: true },
+    });
 
     if (poll) res.status(200).json(poll);
     else res.status(404).json({ message: "Poll not found" });
@@ -37,3 +41,5 @@ export default async function handler(
   res.setHeader("Allow", ["GET", "POST"]);
   res.status(405).end(`Method ${req.method} Not Allowed`);
 }
+
+//http://localhost:3000/?id=cland3pmg00000qsznlqetq0p

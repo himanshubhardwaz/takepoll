@@ -1,5 +1,6 @@
 import { useState, ChangeEvent, useEffect, KeyboardEvent, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { getUrl } from "@/utils/helper";
 
 type Option = {
   name: string;
@@ -94,9 +95,7 @@ const CreatePoll = () => {
   );
 
   const copyToClipboard = async () => {
-    const url = process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : `http://localhost:${process.env.PORT ?? 3000}`;
+    const url = getUrl();
     navigator.clipboard.writeText(`${url}?id=${data?.id}`);
   };
 
