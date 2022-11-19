@@ -21,6 +21,8 @@ export default async function handler(
   } else if (req.method === "POST") {
     const { question, options, deadline } = req.body;
 
+    console.log({ question, options, deadline });
+
     const poll = await prisma.poll.create({
       data: { question, deadline: new Date(deadline) },
     });
@@ -31,6 +33,8 @@ export default async function handler(
         pollId: poll.id,
       })),
     });
+
+    console.log({ poll, createdOptions });
 
     if (poll && createdOptions) {
       res
