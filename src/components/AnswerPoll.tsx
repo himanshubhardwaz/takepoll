@@ -50,9 +50,11 @@ const AnswerPoll = ({
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [canVote, setCanVote] = useState(true);
 
-  const totalVotes = data?.options.reduce((sum, curr) => {
-    return sum + curr.votes;
-  }, 0);
+  const [totalVotes, setTotalVotes] = useState(() =>
+    data?.options.reduce((sum, curr) => {
+      return sum + curr.votes;
+    }, 0)
+  );
 
   const {
     mutate,
@@ -70,7 +72,12 @@ const AnswerPoll = ({
       return data;
     },
     {
-      onSuccess: () => {
+      onSuccess: (newOptions) => {
+        setTotalVotes(() =>
+          newOptions.reduce((sum, curr) => {
+            return sum + curr.votes;
+          }, 0)
+        );
         if (data?.id) localStorage.setItem(`${data.id}`, "done");
         setCanVote(false);
       },
