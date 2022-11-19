@@ -12,7 +12,7 @@ type Props = {
 const ThemeSelector = () => {
   return (
     <>
-      <div title='Change Theme' className='dropdown dropdown-end '>
+      <div title='Change Theme' className='dropdown dropdown-end z-40'>
         <div tabIndex={0} className='btn gap-1 normal-case btn-ghost'>
           <svg
             width='20'

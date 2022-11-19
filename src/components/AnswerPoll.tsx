@@ -13,23 +13,24 @@ function NoId({ isError }: { isError: boolean }) {
   };
 
   return (
-    <div className='hero min-h-screen'>
-      <div className='hero-overlay bg-opacity-60'></div>
-      <div className='hero-content text-center text-neutral-content'>
+    <div className='hero min-h-screen bg-base-200'>
+      <div className='hero-content text-center'>
         <div className='max-w-md'>
-          <h1 className='mb-5 text-5xl font-bold text-white'>Hello there</h1>
-          {isError ? (
-            <p className='text-lg mb-5'>
-              We could not find the poll youre looking for, please check if the
-              url is correct.
-            </p>
-          ) : (
-            <p className='mb-5 text-white text-lg'>
-              Create and conduct polls in a minute. Use it in your flipped
-              classroom, in your lecture or just to amaze your audience. create
-              your poll now!
-            </p>
-          )}
+          <h1 className='text-5xl font-bold'>Hello there</h1>
+          <p className='py-6'>
+            {isError ? (
+              <>
+                We could not find the poll youre looking for, please check if
+                the url is correct.
+              </>
+            ) : (
+              <>
+                Create and conduct polls in a minute. Use it in your flipped
+                classroom, in your lecture or just to amaze your audience.
+                create your poll now!
+              </>
+            )}
+          </p>
           <button className='btn btn-primary' onClick={rediectToCreatePoll}>
             Create Poll
           </button>
