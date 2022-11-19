@@ -1,12 +1,11 @@
 import { useRouter } from "next/router";
-import Image from "next/image";
 import { PollData } from "@/types/poll";
 import { useMutation } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import type { Option } from "@prisma/client";
 
-function NoId() {
+function NoId({ isError }: { isError: boolean }) {
   const router = useRouter();
 
   const rediectToCreatePoll = () => {
@@ -15,16 +14,22 @@ function NoId() {
 
   return (
     <div className='hero min-h-screen'>
-      <Image src='/home_bg.jpeg' fill alt={""} className='' />
       <div className='hero-overlay bg-opacity-60'></div>
       <div className='hero-content text-center text-neutral-content'>
         <div className='max-w-md'>
           <h1 className='mb-5 text-5xl font-bold text-white'>Hello there</h1>
-          <p className='mb-5 text-white'>
-            Create and conduct polls in a minute. Use it in your flipped
-            classroom, in your lecture or just to amaze your audience. create
-            your poll now!
-          </p>
+          {isError ? (
+            <p className='text-lg mb-5'>
+              We could not find the poll youre looking for, please check if the
+              url is correct.
+            </p>
+          ) : (
+            <p className='mb-5 text-white text-lg'>
+              Create and conduct polls in a minute. Use it in your flipped
+              classroom, in your lecture or just to amaze your audience. create
+              your poll now!
+            </p>
+          )}
           <button className='btn btn-primary' onClick={rediectToCreatePoll}>
             Create Poll
           </button>
@@ -34,7 +39,13 @@ function NoId() {
   );
 }
 
-const AnswerPoll = ({ data }: { data?: PollData }) => {
+const AnswerPoll = ({
+  data,
+  isError,
+}: {
+  data?: PollData;
+  isError: boolean;
+}) => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [canVote, setCanVote] = useState(true);
 
@@ -42,7 +53,7 @@ const AnswerPoll = ({ data }: { data?: PollData }) => {
     mutate,
     data: updatedOptions,
     isLoading,
-    error,
+    error: caseVoteError,
   } = useMutation<Array<Option>, Error, void>(
     async () => {
       const response = await fetch(`/api/vote`, {
@@ -80,13 +91,13 @@ const AnswerPoll = ({ data }: { data?: PollData }) => {
     if (voted) setCanVote(false);
   }, [data?.id]);
 
-  if (!data?.id) return <NoId />;
+  if (!data?.id) return <NoId isError={isError} />;
 
   return (
     <div className='min-h-screen flex justify-center items-center text-center'>
       {canVote ? (
-        <form onSubmit={handleSubmit}>
-          <p className='text-3xl mb-4'>Question: {data.question}</p>
+        <form onSubmit={handleSubmit} className='max-w-xs'>
+          <p className='text-2xl mb-4'>Question: {data.question}</p>
           {data.options.map((option) => (
             <div className='form-control' key={option.id}>
               <label className='label cursor-pointer'>

@@ -6,7 +6,6 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method === "GET") {
-    console.log("getting hitted...");
     const id = req.query.id as string;
 
     const poll = await prisma.poll.findFirst({
@@ -14,8 +13,8 @@ export default async function handler(
       include: { options: true },
     });
 
-    if (poll) res.status(200).json(poll);
-    else res.status(404).json({ message: "Poll not found" });
+    if (poll) res.status(200).send(poll);
+    else res.status(404).send({ error: "Poll not found!" });
 
     return;
   } else if (req.method === "POST") {
