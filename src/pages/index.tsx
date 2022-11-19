@@ -3,7 +3,6 @@ import { PollData } from "@/types/poll";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 
-// todo theme
 export default function Home() {
   const router = useRouter();
   const id = router.query.id;

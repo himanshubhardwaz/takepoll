@@ -50,6 +50,10 @@ const AnswerPoll = ({
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [canVote, setCanVote] = useState(true);
 
+  const totalVotes = data?.options.reduce((sum, curr) => {
+    return sum + curr.votes;
+  }, 0);
+
   const {
     mutate,
     data: updatedOptions,
@@ -122,15 +126,40 @@ const AnswerPoll = ({
         </form>
       ) : (
         <div className='flex flex-col gap-3'>
+          <p className='text-2xl mb-4'>Question: {data.question}</p>
           {updatedOptions
             ? updatedOptions?.map((option) => (
-                <div key={option.id} className='font-semibold text-xl'>
-                  {option.name} - {option.votes} votes
+                <div
+                  key={option.id}
+                  className='font-semibold text-xl grid grid-cols-2'
+                >
+                  <div className='self-center'>
+                    {option.name} - {option.votes} votes
+                  </div>
+                  {totalVotes && (
+                    <progress
+                      className='progress progress-secondary w-56 self-center'
+                      value={(option.votes / totalVotes) * 100}
+                      max='100'
+                    ></progress>
+                  )}
                 </div>
               ))
             : data?.options?.map((option) => (
-                <div key={option.id} className='font-semibold text-xl'>
-                  {option.name} - {option.votes} votes
+                <div
+                  key={option.id}
+                  className='font-semibold text-xl grid grid-cols-2'
+                >
+                  <div className='self-center'>
+                    {option.name} - {option.votes} votes
+                  </div>
+                  {totalVotes && (
+                    <progress
+                      className='progress progress-secondary w-56 self-center'
+                      value={(option.votes / totalVotes) * 100}
+                      max='100'
+                    ></progress>
+                  )}
                 </div>
               ))}
         </div>
