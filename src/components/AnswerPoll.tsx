@@ -1,6 +1,10 @@
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { PollData } from "@/types/poll";
+import { useMutation } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import type { ChangeEvent, FormEvent } from "react";
+import type { Option } from "@prisma/client";
 
 function NoId() {
   const router = useRouter();
@@ -31,9 +35,98 @@ function NoId() {
 }
 
 const AnswerPoll = ({ data }: { data?: PollData }) => {
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [canVote, setCanVote] = useState(true);
+
+  const {
+    mutate,
+    data: updatedOptions,
+    isLoading,
+    error,
+  } = useMutation<Array<Option>, Error, void>(
+    async () => {
+      const response = await fetch(`/api/vote`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: selectedOption }),
+      });
+      const data = await response.json();
+      return data;
+    },
+    {
+      onSuccess: () => {
+        if (data?.id) localStorage.setItem(`${data.id}`, "done");
+        setCanVote(false);
+      },
+    }
+  );
+
+  const onOptionSelectChange = (
+    event: ChangeEvent<HTMLInputElement>,
+    id: string
+  ) => {
+    if (event.target.checked) {
+      setSelectedOption(id);
+    }
+  };
+
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault();
+    mutate();
+  };
+
+  useEffect(() => {
+    const voted = window?.localStorage?.getItem?.(`${data?.id}`);
+    if (voted) setCanVote(false);
+  }, [data?.id]);
+
   if (!data?.id) return <NoId />;
 
-  return <>We found data: {JSON.stringify(data)}</>;
+  return (
+    <div className='min-h-screen flex justify-center items-center text-center'>
+      {canVote ? (
+        <form onSubmit={handleSubmit}>
+          <p className='text-3xl mb-4'>Question: {data.question}</p>
+          {data.options.map((option) => (
+            <div className='form-control' key={option.id}>
+              <label className='label cursor-pointer'>
+                <span className='label-text text-lg'>{option.name}</span>
+                <input
+                  onChange={(event) => onOptionSelectChange(event, option.id)}
+                  type='radio'
+                  name='radio-10'
+                  className='radio checked:bg-blue-500'
+                  checked={selectedOption === option.id}
+                />
+              </label>
+            </div>
+          ))}
+          <button
+            className={`btn btn-primary my-4 ${isLoading ? "loading" : ""}`}
+            type='submit'
+          >
+            Caste vote
+          </button>
+        </form>
+      ) : (
+        <div className='flex flex-col gap-3'>
+          {updatedOptions
+            ? updatedOptions?.map((option) => (
+                <div key={option.id} className='font-semibold text-xl'>
+                  {option.name} - {option.votes} votes
+                </div>
+              ))
+            : data?.options?.map((option) => (
+                <div key={option.id} className='font-semibold text-xl'>
+                  {option.name} - {option.votes} votes
+                </div>
+              ))}
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default AnswerPoll;
+
+//http://localhost:3000?id=clanf8oq400040qszkpc0w4qe

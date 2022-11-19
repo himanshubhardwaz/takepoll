@@ -3,7 +3,8 @@ import { GetServerSideProps } from "next";
 import { getUrl } from "@/utils/helper";
 import { PollData } from "@/types/poll";
 
-export default function Home({ data }: { data: PollData }) {
+// todo theme
+export default function Home({ data }: { data?: PollData }) {
   return (
     <>
       <AnswerPoll data={data} />

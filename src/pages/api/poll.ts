@@ -7,10 +7,10 @@ export default async function handler(
 ) {
   if (req.method === "GET") {
     console.log("getting hitted...");
-    const id = req.query;
+    const id = req.query.id as string;
 
     const poll = await prisma.poll.findFirst({
-      where: id,
+      where: { id },
       include: { options: true },
     });
 
