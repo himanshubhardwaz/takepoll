@@ -2,7 +2,7 @@ Create and conduct polls in a minute. Use it in your flipped classroom, in your 
 
 ## Dont forget to rock different themes, btw my favorite is Cyberpunk
 
-# Stack -> Next.js (TypeScript), Tailwind, Prisma, Postgres
+### Stack -> Next.js (TypeScript), Tailwind, Prisma, Postgres
 
 To get started with my personal favorite template:
 
