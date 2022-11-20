@@ -5,19 +5,28 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import Layout from "@/components/Layout";
 import { useEffect } from "react";
 import { themeChange } from "theme-change";
+import { SessionProvider } from "next-auth/react";
 
 export const queryClient = new QueryClient();
-
-export default function App({ Component, pageProps }: AppProps) {
+// todo user login signup
+// todo show user their polls
+// todo countdown timer
+export default function App({
+  Component,
+  pageProps: { session, ...pageProps },
+}: AppProps) {
   useEffect(() => {
     themeChange(false);
   }, []);
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
+    <SessionProvider session={session}>
+      <QueryClientProvider client={queryClient}>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
+    </SessionProvider>
   );
 }
