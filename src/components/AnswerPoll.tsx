@@ -4,9 +4,11 @@ import { useMutation } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import type { Option } from "@prisma/client";
+import { useSession } from "next-auth/react";
 
 function NoId({ isError }: { isError: boolean }) {
   const router = useRouter();
+  const { status } = useSession();
 
   const rediectToCreatePoll = () => {
     router.push("/create");
@@ -31,9 +33,22 @@ function NoId({ isError }: { isError: boolean }) {
               </>
             )}
           </p>
-          <button className='btn btn-primary' onClick={rediectToCreatePoll}>
-            Create Poll
-          </button>
+          <div
+            className='tooltip'
+            data-tip={
+              status === "loading" || status === "unauthenticated"
+                ? "Please Sign In before creating a poll"
+                : "Create a poll now!"
+            }
+          >
+            <button
+              className='btn btn-primary'
+              onClick={rediectToCreatePoll}
+              disabled={status === "loading" || status === "unauthenticated"}
+            >
+              Create Poll
+            </button>
+          </div>
         </div>
       </div>
     </div>
