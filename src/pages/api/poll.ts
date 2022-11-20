@@ -1,5 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/utils/prisma";
+import { unstable_getServerSession } from "next-auth/next";
+import { authOptions } from "./auth/[...nextauth]";
+import type { Poll } from "@prisma/client";
 
 export default async function handler(
   req: NextApiRequest,
@@ -18,13 +21,29 @@ export default async function handler(
 
     return;
   } else if (req.method === "POST") {
+    const session = await unstable_getServerSession(req, res, authOptions);
+
     const { question, options, deadline } = req.body;
 
-    console.log({ question, options, deadline });
+    let poll: Poll;
 
-    const poll = await prisma.poll.create({
-      data: { question, deadline: new Date(deadline) },
-    });
+    // @ts-ignore
+    if (session?.user?.id) {
+      poll = await prisma.poll.create({
+        data: {
+          question,
+          deadline: new Date(deadline),
+          user: {
+            // @ts-ignore
+            connect: { id: session.user.id },
+          },
+        },
+      });
+    } else {
+      poll = await prisma.poll.create({
+        data: { question, deadline: new Date(deadline) },
+      });
+    }
 
     const createdOptions = await prisma.option.createMany({
       data: options.map((option: { name: string }) => ({
@@ -32,8 +51,6 @@ export default async function handler(
         pollId: poll.id,
       })),
     });
-
-    console.log({ poll, createdOptions });
 
     if (poll && createdOptions) {
       res
