@@ -9,8 +9,23 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method === "GET") {
-    res.send("Currently in development!");
-    return;
+    const session = await unstable_getServerSession(req, res, authOptions);
+    // @ts-ignore
+    if (!session?.user?.id) {
+      res.status(401).send("Unautherised Request!!");
+      return;
+    } else {
+      const polls = await prisma.poll.findMany({
+        // @ts-ignore
+        where: { userId: session.user.id },
+        include: {
+          options: true,
+        },
+      });
+
+      res.status(200).send(polls);
+      return;
+    }
   }
   if (req.method === "POST") {
     const session = await unstable_getServerSession(req, res, authOptions);

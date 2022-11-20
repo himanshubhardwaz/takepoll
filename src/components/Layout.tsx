@@ -21,7 +21,7 @@ export default function Layout({ title, children }: Props) {
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <main>
-        <div className='navbar bg-primary text-primary-content fixed'>
+        <div className='navbar bg-primary text-primary-content fixed z-20'>
           <div className='flex-1'>
             <Link href='/' className='btn btn-ghost normal-case text-xl'>
               takePoll
@@ -31,6 +31,9 @@ export default function Layout({ title, children }: Props) {
             <ThemeSelector />
             {status === "authenticated" ? (
               <>
+                <Link className='btn btn-ghost mr-2' href='my-polls'>
+                  My Polls
+                </Link>
                 <div className='dropdown dropdown-end'>
                   <label tabIndex={0} className='cursor-pointer'>
                     <div className='avatar placeholder'>

@@ -1,6 +1,5 @@
 import { useState, ChangeEvent, useEffect, KeyboardEvent, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { getUrl } from "@/utils/helper";
 
 type Option = {
   name: string;
@@ -95,8 +94,7 @@ const CreatePoll = () => {
   );
 
   const copyToClipboard = async () => {
-    const url = getUrl();
-    navigator.clipboard.writeText(`${url}/${data?.id}`);
+    navigator.clipboard.writeText(`https://takepoll.vercel.app/${data?.id}`);
   };
 
   const createPoll = () => {
