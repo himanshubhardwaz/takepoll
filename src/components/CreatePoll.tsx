@@ -1,7 +1,6 @@
 import { useState, ChangeEvent, useEffect, KeyboardEvent, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { getUrl } from "@/utils/helper";
-import { useSession } from "next-auth/react";
 
 type Option = {
   name: string;
@@ -77,7 +76,7 @@ const CreatePoll = () => {
     void
   >(
     async () => {
-      const response = await fetch("/api/poll", {
+      const response = await fetch("/api/polls", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question, options, deadline }),
@@ -97,7 +96,7 @@ const CreatePoll = () => {
 
   const copyToClipboard = async () => {
     const url = getUrl();
-    navigator.clipboard.writeText(`${url}?id=${data?.id}`);
+    navigator.clipboard.writeText(`${url}/${data?.id}`);
   };
 
   const createPoll = () => {
