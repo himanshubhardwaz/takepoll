@@ -1,10 +1,62 @@
 import { useRouter } from "next/router";
 import { PollData } from "@/types/poll";
 import { useMutation } from "@tanstack/react-query";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Dispatch, SetStateAction } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import type { Option } from "@prisma/client";
 import { useSession } from "next-auth/react";
+import { useTimer } from "react-timer-hook";
+import { useQueryClient } from "@tanstack/react-query";
+
+const DeadlineTimer = ({
+  expiryTimestamp,
+  setCanVote,
+  id,
+}: {
+  expiryTimestamp: Date;
+  setCanVote: Dispatch<SetStateAction<boolean>>;
+  id: string;
+}) => {
+  const queryClient = useQueryClient();
+  const { seconds, minutes, hours, days } = useTimer({
+    expiryTimestamp: new Date(expiryTimestamp),
+    onExpire: () => {
+      setCanVote(false);
+      localStorage.setItem(id, "done");
+      queryClient.invalidateQueries({ queryKey: ["poll-data"] });
+    },
+  });
+  return (
+    <div className='mb-8'>
+      <div className='grid grid-flow-col gap-5 text-center auto-cols-max'>
+        <div className='flex flex-col p-2 bg-neutral rounded-box text-neutral-content'>
+          <span className='countdown font-mono text-5xl'>
+            <span style={{ ["--value" as any]: days }}></span>
+          </span>
+          days
+        </div>
+        <div className='flex flex-col p-2 bg-neutral rounded-box text-neutral-content'>
+          <span className='countdown font-mono text-5xl'>
+            <span style={{ ["--value" as any]: hours }}></span>
+          </span>
+          hours
+        </div>
+        <div className='flex flex-col p-2 bg-neutral rounded-box text-neutral-content'>
+          <span className='countdown font-mono text-5xl'>
+            <span style={{ ["--value" as any]: minutes }}></span>
+          </span>
+          min
+        </div>
+        <div className='flex flex-col p-2 bg-neutral rounded-box text-neutral-content'>
+          <span className='countdown font-mono text-5xl'>
+            <span style={{ ["--value" as any]: seconds }}></span>
+          </span>
+          sec
+        </div>
+      </div>
+    </div>
+  );
+};
 
 function NoId({ isError }: { isError: boolean }) {
   const router = useRouter();
@@ -75,7 +127,6 @@ const AnswerPoll = ({
     mutate,
     data: updatedOptions,
     isLoading,
-    error: caseVoteError,
   } = useMutation<Array<Option>, Error, void>(
     async () => {
       const response = await fetch(`/api/vote`, {
@@ -121,7 +172,12 @@ const AnswerPoll = ({
   if (!data?.id) return <NoId isError={isError} />;
 
   return (
-    <div className='min-h-screen flex justify-center items-center text-center'>
+    <div className='min-h-screen flex justify-center items-center text-center flex-col'>
+      <DeadlineTimer
+        expiryTimestamp={data.deadline}
+        setCanVote={setCanVote}
+        id={data.id}
+      />
       {canVote ? (
         <form onSubmit={handleSubmit} className='max-w-xs'>
           <p className='text-2xl mb-4'>Question: {data.question}</p>
@@ -153,7 +209,7 @@ const AnswerPoll = ({
             ? updatedOptions?.map((option) => (
                 <div
                   key={option.id}
-                  className='font-semibold text-xl grid grid-cols-2'
+                  className='font-semibold text-xl grid grid-cols-2 gap-2'
                 >
                   <div className='self-center'>
                     {option.name} - {option.votes} votes
@@ -170,7 +226,7 @@ const AnswerPoll = ({
             : data?.options?.map((option) => (
                 <div
                   key={option.id}
-                  className='font-semibold text-xl grid grid-cols-2'
+                  className='font-semibold text-xl grid grid-cols-2 gap-2'
                 >
                   <div className='self-center'>
                     {option.name} - {option.votes} votes
